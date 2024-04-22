@@ -1,13 +1,13 @@
 import { Scene3d } from '../../canva3d/Scene3d'
 import { UpdatePayload } from '../../utils/Time'
-import { Color, OrthographicCamera } from 'three'
+import { Color, DirectionalLight, Fog, OrthographicCamera } from 'three'
 import { Wall } from './Wall'
-import { clamp, randomRange } from '../../utils/math'
+import { randomRange } from '../../utils/math'
 import { Body, Composite, Engine, Runner } from 'matter-js'
 import { Bubble } from './Bubble'
 import { DeviceAccelerationPayload } from '../../utils/device/DeviceAcceleration'
 
-const getRandomColor = () => `hsl(${Math.round(randomRange(0, 360))}, 60%, 50%)`
+const getRandomColor = () => `hsl(${Math.round(randomRange(0, 360))}, 70%, 50%)`
 
 export class SceneScenario3d extends Scene3d {
 	camera: OrthographicCamera
@@ -30,13 +30,29 @@ export class SceneScenario3d extends Scene3d {
 			-this.height / 2
 		)
 		this.camera.position.z = 100
+		this.camera.position.y = 10
+		this.camera.position.x = 10
+
+		this.camera.lookAt(0, 0, 0)
+
+		const light = new DirectionalLight(0xffffff, 3)
+		light.position.set(5, 0, 10).normalize()
+		this.add(light)
+
+		const light2 = new DirectionalLight(0xffffff, 3)
+		light2.position.set(-5, 0, 10).normalize()
+		this.add(light2)
+
+		const light3 = new DirectionalLight(0xffffff, 1)
+		light3.position.set(0, 5, 10).normalize()
+		this.add(light3)
 
 		// THREE
 
 		this.leftWall = new Wall({ color: new Color('darkblue') })
 		this.rightWall = new Wall({ color: new Color('darkblue') })
-		this.topWall = new Wall({ color: new Color('tomato') })
-		this.bottomWall = new Wall({ color: new Color('tomato') })
+		this.topWall = new Wall({ color: new Color('brown') })
+		this.bottomWall = new Wall({ color: new Color('brown') })
 		this.walls = [this.leftWall, this.rightWall, this.topWall, this.bottomWall]
 
 		this.add(this.leftWall)
@@ -102,13 +118,6 @@ export class SceneScenario3d extends Scene3d {
 		const width = (this.width - thickness * 2) * freeSpace
 		this.topWall.setSize(width, thickness)
 		this.bottomWall.setSize(width, thickness)
-
-		console.log(
-			this.topWall.body.position.x,
-			this.topWall.body.position.y,
-			this.topWall.body.bounds.max.x - this.topWall.body.bounds.min.x,
-			this.topWall.body.bounds.max.y - this.topWall.body.bounds.min.y
-		)
 
 		this.leftWall.setPosition(-this.width / 2 - thickness, 0)
 		this.rightWall.setPosition(this.width / 2 + thickness, 0)

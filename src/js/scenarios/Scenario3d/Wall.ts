@@ -1,5 +1,14 @@
-import { BoxGeometry, Color, Mesh, MeshBasicMaterial } from 'three'
+import {
+	BoxGeometry,
+	Color,
+	Mesh,
+	MeshLambertMaterial,
+	MeshMatcapMaterial,
+	MeshToonMaterial,
+	TextureLoader
+} from 'three'
 import { Bodies, Body } from 'matter-js'
+import Matcap2 from './assets/matcap-2.png'
 
 export class Wall extends Mesh {
 	depth: number = 1
@@ -8,7 +17,9 @@ export class Wall extends Mesh {
 
 	constructor({ color = new Color('blue') }: { color?: Color }) {
 		const geometry = new BoxGeometry(1, 1, 1)
-		const material = new MeshBasicMaterial({ color })
+		const material = new MeshLambertMaterial({
+			color
+		})
 		super(geometry, material)
 
 		this.body = Bodies.rectangle(0, 0, 1, 1, { isStatic: true })

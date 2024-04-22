@@ -1,4 +1,4 @@
-import { BoxGeometry, Color, Material, Mesh, MeshBasicMaterial, SphereGeometry } from 'three'
+import { BoxGeometry, Color, Material, Mesh, MeshLambertMaterial } from 'three'
 import { Bodies, Body } from 'matter-js'
 
 export class Bubble extends Mesh {
@@ -6,8 +6,11 @@ export class Bubble extends Mesh {
 	size: number
 
 	constructor({ color, size }: { color: Color; size: number }) {
-		const geometry = new BoxGeometry(size, size)
-		const material = new MeshBasicMaterial({ color })
+		const geometry = new BoxGeometry(size, size, 50)
+
+		const material = new MeshLambertMaterial({
+			color
+		})
 		super(geometry, material)
 		this.size = size
 
@@ -32,9 +35,5 @@ export class Bubble extends Mesh {
 		if (this.material instanceof Material) {
 			this.material.dispose()
 		}
-	}
-
-	setVelocity(vx: number, vy: number) {
-		Body.setVelocity(this.body, { x: vx, y: vy })
 	}
 }
