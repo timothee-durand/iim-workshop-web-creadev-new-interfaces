@@ -1,11 +1,17 @@
 import { Scene3d } from '../../canva3d/Scene3d'
 import { UpdatePayload } from '../../utils/Time'
-import { Color, DirectionalLight, Fog, OrthographicCamera } from 'three'
+import { Color, DirectionalLight, Fog, OrthographicCamera, Vector2 } from 'three'
 import { Wall } from './Wall'
 import { randomRange } from '../../utils/math'
 import { Body, Composite, Engine, Runner } from 'matter-js'
 import { Bubble } from './Bubble'
 import { DeviceAccelerationPayload } from '../../utils/device/DeviceAcceleration'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass'
+import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass'
+import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPixelatedPass'
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass'
 
 const getRandomColor = () => `hsl(${Math.round(randomRange(0, 360))}, 70%, 50%)`
 
@@ -20,6 +26,7 @@ export class SceneScenario3d extends Scene3d {
 	bottomWall: Wall
 	bubbles: Bubble[] = []
 	walls: Wall[]
+	composer: EffectComposer
 
 	constructor({ canvaId, bubbleCount }: { canvaId: string; bubbleCount: number }) {
 		super(canvaId)
@@ -46,6 +53,21 @@ export class SceneScenario3d extends Scene3d {
 		const light3 = new DirectionalLight(0xffffff, 1)
 		light3.position.set(0, 5, 10).normalize()
 		this.add(light3)
+
+		this.composer = new EffectComposer(this.renderer)
+		const renderPixelatedPass = new RenderPixelatedPass(6, this, this.camera)
+		this.composer.addPass(renderPixelatedPass)
+
+		const bloomPass = new UnrealBloomPass(
+			new Vector2(window.innerWidth, window.innerHeight),
+			0.5,
+			0.1,
+			0.4
+		)
+		this.composer.addPass(bloomPass)
+
+		const outputPass = new OutputPass()
+		this.composer.addPass(outputPass)
 
 		// THREE
 
@@ -95,7 +117,7 @@ export class SceneScenario3d extends Scene3d {
 	}
 
 	update(payload: UpdatePayload) {
-		super.update(payload)
+		this.composer.render()
 		this.bubbles.forEach((b) => b.update())
 		this.walls.forEach((w) => w.update())
 	}
