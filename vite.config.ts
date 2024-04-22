@@ -11,5 +11,6 @@ export default defineConfig({
 			console: 'terminal'
 		}),
 		mkcert()
-	]
+	],
+	base: process.env.APP_ENV === 'production' ? '/iim-workshop-web-creadev-new-interfaces' : '/'
 })
