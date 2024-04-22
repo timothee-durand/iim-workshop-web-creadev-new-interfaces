@@ -12,5 +12,5 @@ export default defineConfig({
 		}),
 		mkcert()
 	],
-	base: process.env.APP_ENV === 'production' ? '/iim-workshop-web-creadev-new-interfaces' : '/'
+	base: '/iim-workshop-web-creadev-new-interfaces/'
 })
