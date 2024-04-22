@@ -8,7 +8,7 @@ export default defineConfig({
 	},
 	plugins: [
 		Terminal({
-			console: 'terminal'
+			//console: 'terminal'
 		}),
 		mkcert()
 	],
