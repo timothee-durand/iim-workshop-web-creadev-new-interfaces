@@ -1,5 +1,5 @@
 import { EventEmitter } from '../events/EventEmitter'
-import { Accelerometer } from './motion-sensors.js'
+import { Accelerometer } from '../../../lib/sensor-polyfills/src/motion-sensors.js'
 
 export interface DeviceAccelerationPayload {
 	x: number

@@ -7,7 +7,7 @@ import {
 	notifyActivatedState,
 	activateCallback,
 	deactivateCallback
-} from '../../../lib/sensor-polyfills/src/sensor.js'
+} from './sensor.js'
 
 const slot = __sensor__
 const handleEventCallback = Symbol('handleEvent')
