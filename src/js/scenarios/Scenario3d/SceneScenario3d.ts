@@ -21,12 +21,6 @@ export class SceneScenario3d extends Scene3d {
 	bubbles: Bubble[] = []
 	walls: Wall[]
 
-	params: {
-		gStrength: number
-	} = {
-		gStrength: 300
-	}
-
 	constructor({ canvaId, bubbleCount }: { canvaId: string; bubbleCount: number }) {
 		super(canvaId)
 		this.camera = new OrthographicCamera(
@@ -116,17 +110,10 @@ export class SceneScenario3d extends Scene3d {
 			this.topWall.body.bounds.max.y - this.topWall.body.bounds.min.y
 		)
 
-		const halfThickness = thickness / 2
-		this.leftWall.setPosition(-this.width / 2 + halfThickness, 0)
-		this.rightWall.setPosition(this.width / 2 - halfThickness, 0)
-		this.topWall.setPosition(
-			-(this.width * (1 - freeSpace)) / 2 + halfThickness,
-			-this.height * 0.1
-		)
-		this.bottomWall.setPosition(
-			(this.width * (1 - freeSpace)) / 2 - halfThickness,
-			this.height * 0.3
-		)
+		this.leftWall.setPosition(-this.width / 2 - thickness, 0)
+		this.rightWall.setPosition(this.width / 2 + thickness, 0)
+		this.topWall.setPosition(-(this.width * (1 - freeSpace)) / 2 + thickness, -this.height * 0.1)
+		this.bottomWall.setPosition((this.width * (1 - freeSpace)) / 2 - thickness, this.height * 0.3)
 	}
 
 	onDeviceAcceleration(p: DeviceAccelerationPayload) {
@@ -134,19 +121,7 @@ export class SceneScenario3d extends Scene3d {
 		this.engine.gravity.y = -p.y / 9.81
 	}
 
-	addBubble({
-		x,
-		y,
-		radius,
-		vx,
-		vy
-	}: {
-		x: number
-		y: number
-		radius: number
-		vx: number
-		vy: number
-	}) {
+	addBubble({ x, y, radius }: { x: number; y: number; radius: number }) {
 		const bubble = new Bubble({
 			color: new Color(getRandomColor()),
 			size: radius

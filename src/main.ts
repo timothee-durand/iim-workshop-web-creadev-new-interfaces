@@ -17,7 +17,7 @@ const scene1 = new BouncingBubbleScene({
 	params: {
 		radius: 10,
 		threshold: 40,
-		bubbleCount: 10,
+		bubbleCount: 3,
 		animationSpeed: 1,
 		lineWidth: 1,
 		gStrength: 50,
@@ -32,7 +32,7 @@ const scene3 = new BouncingBubbleScene({
 	params: {
 		radius: 6,
 		threshold: 40,
-		bubbleCount: 10,
+		bubbleCount: 3,
 		animationSpeed: 1,
 		lineWidth: 0.5,
 		gStrength: 50,
@@ -43,33 +43,28 @@ const scene3 = new BouncingBubbleScene({
 	}
 })
 
-const scene2 = new SceneScenario3d({ canvaId: 'canvas-scene-3', bubbleCount: 10 })
+const scene2 = new SceneScenario3d({ canvaId: 'canvas-scene-3', bubbleCount: 3 })
 
-let previousLength = [scene1.bubbles.length, scene2.bubbles.length, scene3.bubbles.length]
 const time = windowContext.time
 time.on<UpdatePayload>('update', () => {
-	scene1.bubbles = scene1.bubbles.filter((b) => {
-		const stayInScene1 = b.coords.y < scene1.height + b.radius
-		// if (!stayInScene1) {
-		// 	scene2.addBubble({
-		// 		x: b.coords.x,
-		// 		y: -scene2.height / 2,
-		// 		radius: b.radius,
-		// 		vx: b.vx,
-		// 		vy: b.vy
-		// 	})
-		// }
-		return stayInScene1
+	scene1.bubbles = scene1.bubbles.filter((b, i) => {
+		if (b.coords.y > scene1.height + b.radius) {
+			console.log('go to scene 2 from 1', i)
+			scene2.addBubble({
+				x: b.coords.x,
+				y: -scene2.height / 2 - b.radius,
+				radius: b.radius,
+				vx: b.vx,
+				vy: b.vy
+			})
+			return false
+		}
+		return true
 	})
 	const newScene3Bubbles: Bubble3d[] = []
-	scene2.bubbles.forEach((b) => {
-		const goToScene1 = b.position.y > scene2.height + b.size
-		const goToScene3 = b.position.y < -scene2.height - b.size
-		if (!goToScene1 && !goToScene3) {
-			newScene3Bubbles.push(b)
-			return
-		}
-		if (goToScene1) {
+	scene2.bubbles.forEach((b, i) => {
+		if (b.position.y > scene2.height) {
+			console.log('go to scene 1', i)
 			scene1.addBubble({
 				x: b.position.x + scene2.width / 2,
 				y: scene1.height + b.size * 2,
@@ -80,7 +75,8 @@ time.on<UpdatePayload>('update', () => {
 			b.destroy()
 			return
 		}
-		if (goToScene3) {
+		if (b.position.y < -scene2.height) {
+			console.log('go to scene 3', i)
 			scene3.addBubble({
 				x: b.position.x + scene2.width / 2,
 				y: b.size * 2,
@@ -89,34 +85,23 @@ time.on<UpdatePayload>('update', () => {
 				vx: randomRange(-100, 100)
 			})
 			b.destroy()
+			return
 		}
+		newScene3Bubbles.push(b)
 	})
 	scene2.bubbles = newScene3Bubbles
-	scene3.bubbles = scene3.bubbles.filter((b) => {
-		const shouldGoTo2 = b.coords.y < -b.radius
-		if (shouldGoTo2) {
+	scene3.bubbles = scene3.bubbles.filter((b, i) => {
+		if (b.coords.y < -b.radius) {
+			console.log('go to scene 2 from 3', i)
 			scene2.addBubble({
 				x: b.coords.x,
-				y: scene2.height / 2,
+				y: scene2.height / 2 + b.radius,
 				radius: b.radius,
 				vx: b.vx,
 				vy: b.vy
 			})
+			return false
 		}
-		return !shouldGoTo2
+		return true
 	})
-	if (
-		previousLength[0] !== scene1.bubbles.length ||
-		previousLength[1] !== scene2.bubbles.length ||
-		previousLength[2] !== scene3.bubbles.length
-	) {
-		console.log(previousLength[0], previousLength[1], previousLength[2])
-		console.log(scene1.bubbles.length, scene2.bubbles.length, scene3.bubbles.length)
-		console.log(
-			previousLength.reduce((acc, curr) => acc + curr, 0),
-			scene1.bubbles.length + scene2.bubbles.length + scene3.bubbles.length
-		)
-		console.log('----')
-	}
-	previousLength = [scene1.bubbles.length, scene2.bubbles.length, scene3.bubbles.length]
 })
