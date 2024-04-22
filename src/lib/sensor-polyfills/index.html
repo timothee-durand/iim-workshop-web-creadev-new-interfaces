@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Generic Sensor API polyfills example</title>
+<script>
+  let log = console.log;
+  console.log = (message, ...rest) => {
+    const div = document.querySelector('#console');
+    let child = document.createElement('div');
+    if (typeof(message) === 'object') {
+      child.innerText = `${message.constructor.name}{${Object.getOwnPropertyNames(message)}}`;
+    }
+    else
+      child.innerText = message;
+    div.appendChild(child);
+
+    log.call(console, message, ...rest);
+  }
+</script>
+
+<script type="module">
+import { GeolocationSensor } from './src/geolocation-sensor.js';
+
+window.GeolocationSensor = GeolocationSensor;
+</script>
+
+<script type="module">
+import {
+  AbsoluteOrientationSensor,
+  RelativeOrientationSensor,
+  Gyroscope,
+  Accelerometer,
+  LinearAccelerationSensor,
+  GravitySensor
+} from './src/motion-sensors.js';
+
+let accel = new Accelerometer({ frequency: 50 });
+
+accel.onerror = err => console.log(err);
+accel.onreading = (event) => {
+  const sensor = event.target;
+
+  const timestamp = document.querySelector('#timestamp');
+  timestamp.innerHTML = `Timestamp: ${sensor.timestamp}`;
+
+  const data = document.querySelector('#data');
+  data.innerHTML = `[${sensor.x}, ${sensor.y}, ${sensor.z}]`;
+}
+accel.start();
+
+function format(num) {
+  return num.toFixed(3).padStart(6).replace(' ', '&nbsp;');
+}
+
+let sensor = new RelativeOrientationSensor();
+
+sensor.onerror = err => console.log(err);
+
+sensor.onreading = (event) => {
+    const sensor = event.target;
+
+    let mat = new Float32Array(16);
+    sensor.populateMatrix(mat);
+    const data = document.querySelector('#data');
+
+    let str = "";
+    for (let i = 0; i < 3; i++) {
+      const a = format(mat[i * 4 + 0]);
+      const b = format(mat[i * 4 + 1]);
+      const c = format(mat[i * 4 + 2]);
+      str += `[${a}, ${b}, ${c}]<br>`;
+    }
+
+    const quat = document.querySelector('#quat');
+
+    let q = sensor.quaternion;
+    const a = format(q[0]);
+    const b = format(q[1]);
+    const c = format(q[2]);
+    const d = format(q[3]);
+
+    quat.innerHTML = `
+      <br>PureQuaternion: [x: ${a}, y: ${b}, z: ${c}, w: ${d}]`;
+
+    const timestamp = document.querySelector('#timestamp');
+    timestamp.innerHTML = `Timestamp: ${sensor.timestamp}`;
+  }
+  sensor.onactivate = _ => {
+    console.log("activating");
+    console.log("activated: " + sensor.activated);
+  };
+  //console.log(sensor);
+  //sensor.start();
+  //console.log("start/activated: " + sensor.activated);
+  //sensor.stop();
+  //console.log("stop/activated: " + sensor.activated);
+
+
+</script>
+
+<body>
+  <div id="data"></div>
+  <div id="quat"></div>
+  <div id="timestamp"></div>
+  <div id="console"></div>
+</body>
+</html>

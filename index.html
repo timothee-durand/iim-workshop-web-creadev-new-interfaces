@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+		<link rel="icon" href="./favicon.ico" />
+		<title>Creative Web</title>
+	</head>
+
+	<body data-debug>
+		<h1>Creative Web</h1>
+		<button type="button" id="permissions">Start sensors</button>
+		<div class="container">
+			<canvas id="canvas-scene" class="scene"></canvas>
+			<canvas id="canvas-scene-3" class="scene"></canvas>
+			<canvas id="canvas-scene-2" class="scene"></canvas>
+		</div>
+		<div class="spacer"></div>
+		<script type="module" src="src/main.ts"></script>
+	</body>
+
+	<style>
+		body {
+			background-color: black;
+			font-family: sans-serif;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		h1 {
+			text-align: center;
+			text-transform: uppercase;
+			color: white;
+			line-height: 1.4em;
+			font-size: 1.5rem;
+		}
+
+		.container {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			gap: 1rem;
+			margin-block: 1rem;
+			max-width: 80vw;
+			margin: 0 auto;
+		}
+
+		.scene {
+			image-rendering: pixelated;
+			aspect-ratio: 2;
+			border: solid white 1px;
+			width: 100% !important;
+			height: 100% !important;
+		}
+
+		.spacer {
+			/*height: 300vh;*/
+		}
+
+		#debug {
+			color: white;
+		}
+
+		#permissions {
+			appearance: none;
+			background-color: transparent;
+			border: 1px solid white;
+			color: white;
+			border-radius: 20px;
+			padding: 0.5rem 0.9rem;
+			margin: 1rem auto;
+			display: block;
+		}
+	</style>
+</html>

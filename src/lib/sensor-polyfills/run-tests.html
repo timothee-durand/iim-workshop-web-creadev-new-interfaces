@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Generic Sensor API polyfills tests</title>
+<script src="tests/testharness.js"></script>
+<script src="tests/testharnessreport.js"></script>
+<script src="tests/geolocation-tests.js"></script>
+<script src="tests/EventTarget-tests.js"></script>
+<script src="tests/generic-sensor-tests.js"></script>
+<meta name="timeout" content="long">
+<script type="module">
+import {
+  AbsoluteOrientationSensor,
+  RelativeOrientationSensor,
+  Gyroscope,
+  Accelerometer,
+  LinearAccelerationSensor,
+  GravitySensor
+} from './src/motion-sensors.js';
+
+import {
+  GeolocationSensor
+} from './src/geolocation-sensor.js';
+
+import {
+  EventTarget,
+  EventTargetMixin
+} from './src/sensor.js';
+
+runEventTarget_constructible(EventTarget);
+runEventTarget_addEventListener(EventTarget);
+runEventTarget_removeEventListener(EventTarget);
+
+class TestB extends EventTargetMixin(HTMLElement) {
+  constructor(...args) {
+    super(...args);
+    console.log(this);
+  }
+}
+
+runGeolocationSensorTests(GeolocationSensor);
+runGenericSensorTests(GeolocationSensor);
+
+runEventTarget_dispatchEvent(TestB);
+
+runGenericSensorTests(RelativeOrientationSensor);
+runGenericSensorTests(AbsoluteOrientationSensor);
+runGenericSensorTests(Gyroscope);
+runGenericSensorTests(Accelerometer);
+runGenericSensorTests(LinearAccelerationSensor);
+runGenericSensorTests(GravitySensor);
+</script>
+
+<body>
+  <div id="console"></div>
+</body>
+</html>
